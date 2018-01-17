@@ -1,0 +1,30 @@
+{
+  "name": "shiritori-scripts",
+  "description": "shiritori scripts",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache Version 2.0",
+  "author": "Google Inc.",
+  "engines": {
+    "node": "~6.0"
+  },
+  "scripts": {
+    "lint": "eslint --fix \"**/*.js\"",
+    "test": "npm run lint"
+  },
+  "dependencies": {
+    "firebase-admin": "^4.2.1",
+    "kuromoji": "^0.1.1",
+    "kuroshiro": "^0.1.5",
+    "wanakana": "^2.3.4"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
+}
