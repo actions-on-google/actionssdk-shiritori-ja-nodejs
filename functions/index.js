@@ -36,6 +36,7 @@ const しりとり = (function () {
   }
 }());
 const kuroshiro = require('kuroshiro');
+const wanakana = require('wanakana');
 const path = require('path');
 const dicPath = path.join(path.dirname(path.dirname(require.resolve('kuromoji'))), 'dict');
 const kuroshiroLoaded = new Promise((resolve, reject) => {
@@ -56,7 +57,7 @@ function welcomeHandler (app) {
 function gameHandler (app) {
   kuroshiroLoaded.then(() => {
     const input = app.getRawInput();
-    const kana = kuroshiro.toHiragana(input);
+    const kana = wanakana.toHiragana(kuroshiro.toHiragana(input));
     let k = kana[kana.length - 1];
     if ((k === 'ー') && (kana.length > 1)) {
       k = kana[kana.length - 2];
