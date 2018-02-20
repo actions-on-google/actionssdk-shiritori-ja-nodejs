@@ -62,6 +62,9 @@ function gameHandler (app) {
     if ((k === 'ー') && (kana.length > 1)) {
       k = kana[kana.length - 2];
     }
+    if ('ぁぃぅぇぉゃゅょ'.indexOf(k) > -1) {
+      k = String.fromCharCode(k.charCodeAt(0)+1);
+    }
     const pkana = app.data.used[0];
     let pk = pkana[pkana.length - 1];
     if ((pk === 'ー') && (pkana.length > 1)) {
