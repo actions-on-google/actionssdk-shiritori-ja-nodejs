@@ -73,7 +73,7 @@ fs.readFile(process.argv[3], 'utf8', function (err, data) {
       }
       const parsed = parseEdict2(line);
       const word = parsed.漢字;
-      const kana = kuroshiro.toHiragana(word);
+      const kana = wanakana.toHiragana(kuroshiro.toHiragana(word));
       const k = kana[0];
       const lk = kana[kana.length - 1];
       if ((lk === 'ん') || !wanakana.isHiragana(k) || !wanakana.isHiragana(lk)) {
