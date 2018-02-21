@@ -18,7 +18,6 @@ const fs = require('fs');
 const wanakana = require('wanakana');
 const kuroshiro = require('kuroshiro');
 const path = require('path');
-const dicPath = path.join(path.dirname(path.dirname(require.resolve('kuromoji'))), 'dict');
 
 if (process.argv.length < 4) {
   console.error('usage: admin <category> <edict> [service-action.json]');
@@ -61,7 +60,7 @@ fs.readFile(process.argv[3], 'utf8', function (err, data) {
     console.log(err);
     return;
   }
-  kuroshiro.init({dicPath: dicPath}, function (err) {
+  kuroshiro.init(function (err) {
     if (err) {
       console.log(err);
       return;

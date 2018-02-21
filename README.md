@@ -44,11 +44,11 @@
 1. Generate local corpus:
 
         npm install scripts/
-        node scripts/admin.js food edict2-food.utf8 > functions/corpus.json
+        node scripts/admin.js food edict2-food.utf8 > functions/shiritori/corpus.json
 
 1. Try locally:
 
-		node scripts/main.js
+		node functions/shiritori/main.js
 
 ```
 しりとり

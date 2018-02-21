@@ -1,0 +1,31 @@
+{
+  "name": "shiritori",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --fix \"**/*.js\"",
+    "test": "ava --verbose",
+    "しりとり": "./main.js"
+  },
+  "author": "Google Inc.",
+  "license": "Apache Version 2.0",
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-babel": "^4.1.2",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "dependencies": {
+    "kuroshiro": "^0.2.1",
+    "wanakana": "^2.3.4"
+  },
+  "bin": {
+    "しりとり": "./main.js"
+  }
+}

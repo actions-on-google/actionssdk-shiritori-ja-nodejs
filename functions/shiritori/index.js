@@ -1,0 +1,123 @@
+// Copyright 2018, Google, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+'use strict'
+
+const kuroshiro = require('kuroshiro')
+const wanakana = require('wanakana')
+
+const smallKanas = 'ぁぃぅぇぉゃゅょ'
+let kuroshiroLoaded = false
+
+exports.loaded = new Promise((resolve, reject) => {
+  kuroshiro.init(function (err) {
+    if (err) {
+      reject(err)
+      return
+    }
+    kuroshiroLoaded = true
+    resolve()
+  })
+})
+
+// Check the first word against remaining of the shiritori chain.
+exports.check = (word, chain) => {
+  if ((chain === undefined) || (chain.length === 0)) {
+    return true
+  }
+
+  if (kuroshiroLoaded) {
+    word = kuroshiro.toHiragana(word)
+    chain = chain.map((e) => kuroshiro.toHiragana(e))
+  }
+
+  const wordHira = wanakana.toHiragana(word)
+  const chainHira = chain.map(wanakana.toHiragana)
+
+  if (chainHira.indexOf(wordHira, 0) !== -1) {
+    return false
+  }
+
+  const validKanas = exports.kanas(chain[0])
+  for (const k of validKanas) {
+    const begin = wordHira.slice(0, k.length)
+    if (begin === k) {
+      return true
+    }
+  }
+  return false
+}
+
+// Returns a Set of valid kana sequences for the next word.
+exports.kanas = (word) => new Set((() => {
+  if (kuroshiroLoaded) {
+    word = kuroshiro.toHiragana(word)
+  }
+
+  const wordKana = wanakana.toKatakana(word)
+  const wordHira = wanakana.toHiragana(wordKana)
+  const kk = wordKana[word.length - 1]
+  const hk = wordHira[wordHira.length - 1]
+
+  if (hk === 'ん') {
+    return []
+  }
+
+  if ((kk === 'ー') && (wordKana.length > 1)) {
+    return [
+      wordHira[wordHira.length - 1],
+      wordHira[wordHira.length - 2]
+    ]
+  }
+
+  if (smallKanas.includes(hk)) {
+    return [
+      String.fromCharCode(hk.charCodeAt(0) + 1),
+      wordHira.slice(-2)
+    ]
+  }
+
+  return [
+    wordHira[wordHira.length - 1]
+  ]
+})())
+
+// Evaluate one round of game with for given word and previous inputs.
+exports.interact = (dict, word, previousInputs, callbacks) => {
+  const next = exports.kanas(word)
+  if ((next.size === 0) || !exports.check(word, previousInputs)) {
+    return callbacks.lose()
+  }
+  const key = next.values().next().value
+  // TODO(proppy): add multiple key lookup
+  dict(key).then((words) => {
+    const unused = []
+    if (words) {
+      for (const k of Object.keys(words)) {
+        if (!previousInputs.includes(words[k])) {
+          unused.push(k)
+        }
+      }
+    }
+    if (unused.length === 0) {
+      return callbacks.win()
+    }
+    const w = unused[Math.floor(Math.random() * unused.length)]
+    const wk = words[w]
+    if (wk[wk.length - 1] === 'ん') {
+      return callbacks.win(w, wk)
+    }
+    return callbacks.next(w, wk)
+  })
+}
