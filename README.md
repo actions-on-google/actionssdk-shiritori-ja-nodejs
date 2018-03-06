@@ -1,55 +1,52 @@
-# しりとり Actions on Google Sample
+# しりとり Dialogflow サンプルゲーム
 
-しりとりのゲーム.
+## 設定
 
-## Setup
-
-1. Create [Dialogflow](https://dialogflow.com/) Project.
-1. Enable fullfillment using firebase functions.
-1. Download `edict2` dictionary from http://www.edrdg.org/jmdict/edict_doc.html.
-1. Convert the dictionary to utf-8:
+1. 「[Dialogflow](https://dialogflow.com/)」のプロジェクトを作成する。
+1. 「Firebase Cloud Functions」のfullfillmentをつかう。
+1. [edict2](http://www.edrdg.org/jmdict/edict_doc.html)の辞書をダウンロードする。
+1. utf-8に変換する：
 
         iconv -f euc-jp -t utf-8 edict2 -o edict2.utf8
 
-1. Extract only food noons:
+1. 食べ物だけをフィルターする：
 
         cat edict2.utf8 | grep '/(n' | grep '{food}' > edict2-food.utf8
 
-1. Load corpus in firebase realtime database.
+1. 「Firebase Database」にアップロードする：
 
         npm install scripts/
         node scripts/admin.js food edict2-food.utf8 /path/to/service-account
         ^C
 
-1. Deploy firebase functions.
+1. 「Firebase Functions」をデプロイする。
 
         firebase deploy
 
-1. Bump the `shiritori` cloud functions memory allocation to 512MB.
-1. Set locale to japanese in the simulator.
-1. Try the Assistant app.
+1. [Cloud Console](https://console.cloud.google.com)で `shiritori` のRAMを512MBまで上げる。
+1. 「Actions on Google Simulator」でロケールを日本語に設定する。
+1. アシスタントアプリをテストしてみる。
 
         > テスト用アプリにつないで
 
-## Test locally
+## ローカルでのテスト
 
-1. Download `edict2` dictionary from http://www.edrdg.org/jmdict/edict_doc.html.
-1. Convert the dictionary to utf-8:
+1. [edict2](http://www.edrdg.org/jmdict/edict_doc.html)の辞書をダウンロードする。
+1. utf-8に変換する：
 
         iconv -f euc-jp -t utf-8 edict2 -o edict2.utf8
 
-1. Extract only food noons:
+1. 食べ物だけをフィルターする：
 
         cat edict2.utf8 | grep '/(n' | grep '{food}' > edict2-food.utf8
 
-1. Generate local corpus:
+1. ローカルのコーパスを作成する：
 
-        npm install scripts/
         node scripts/admin.js food edict2-food.utf8 > functions/shiritori/corpus.json
 
-1. Try locally:
+1. ローカルで起動してテストする：
 
-		node functions/shiritori/main.js
+        node functions/shiritori/main.js
 
 ```
 しりとり
