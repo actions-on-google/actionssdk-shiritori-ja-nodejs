@@ -33,25 +33,25 @@ rl.prompt()
 shiritori.loaded.then(() => {
   rl.on('line', (input) => {
     shiritori.interact(kana => Promise.resolve(
-	corpus[kana]), input, previousInputs, {
-	  win (word, kana) {
+        corpus[kana]), input, previousInputs, {
+          win (word, kana) {
             if (word) {
               console.log(`${word} [${kana}]`)
             } else {
               console.log('すごい！')
             }
             process.exit(0)
-	  },
-	  lose () {
+          },
+          lose () {
             console.log('ざんねん。')
             process.exit(-1)
-	  },
-	  next (word, kana) {
+          },
+          next (word, kana) {
             inputs.unshift(input)
             inputs.unshift(kana)
             console.log(`${word} [${kana}]`)
             rl.prompt()
-	  }
-	})
+          }
+        })
   })
 })
