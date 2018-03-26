@@ -47,7 +47,7 @@ function gameHandler (app) {
       },
       next (word, kana) {
         app.data.used.unshift(input);
-        app.data.used.unshift(kana);
+        app.data.used.unshift(word);
         app.ask({
           speech: word,
           displayText: `${word} [${kana}]`
