@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "kuroshiro": "^0.2.1",
-    "wanakana": "^2.3.4"
+    "object.entries": "^1.0.4",
+    "wanakana": "^3.1.0"
   },
   "bin": {
     "しりとり": "./main.js"

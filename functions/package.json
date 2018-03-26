@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "actions-on-google": "^1.5.x",
-    "ava": "^0.25.0",
     "firebase-admin": "^4.2.1",
     "firebase-functions": "^0.8.1",
     "kuroshiro": "^0.2.1",
+    "object.entries": "^1.0.4",
     "shiritori": "file:shiritori",
-    "wanakana": "^2.3.4"
+    "wanakana": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

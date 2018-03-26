@@ -15,8 +15,8 @@
   "dependencies": {
     "firebase-admin": "^4.2.1",
     "kuromoji": "^0.1.1",
-    "kuroshiro": "^0.1.5",
-    "wanakana": "^2.3.4"
+    "kuroshiro": "^0.2.1",
+    "wanakana": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

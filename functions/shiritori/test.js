@@ -38,6 +38,7 @@ test('ー rules', async t => {
   t.true(shiritori.check('かり', ['りかー']))
   t.true(shiritori.check('あり', ['りかー']))
   t.false(shiritori.check('とんかつ', ['りかー']))
+  t.true(shiritori.check('田んぼ', ['スプリンター']))
 })
 
 test('ぁぃぅぇぉゃゅょ rules', async t => {
@@ -69,6 +70,12 @@ const dict = k => Promise.resolve({
   },
   'つ': {
     'つけまん': 'つけまん'
+  },
+  'ざ': {
+    '座布団': 'ざぶとん'
+  },
+  'ぼ': {
+    'ボンボン': 'ぼんぼん'
   }
 }[k])
 
@@ -111,5 +118,18 @@ test.cb('internal.win with result', t => {
       t.is('つけまん', word)
       t.end()
     }
+  })
+})
+
+test.cb('interact.win kanji', t => {
+  t.plan(2)
+  shiritori.loaded.then(() => {
+    shiritori.interact(dict, '銀座', ['鰻'], {
+      win (word, kana) {
+        t.is('ざぶとん', kana)
+        t.is('座布団', word)
+        t.end()
+      }
+    })
   })
 })
