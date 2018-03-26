@@ -91,8 +91,5 @@ fs.readFile(process.argv[3], 'utf8', function (err, data) {
       しりとり[k][word] = kana;
     });
     console.log(JSON.stringify(しりとり));
-    if (admin) {
-      admin.database().goOffline();
-    }
   });
 });

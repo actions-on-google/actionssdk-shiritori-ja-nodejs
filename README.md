@@ -19,6 +19,7 @@
 
         npm install scripts/
         node scripts/admin.js food edict2-food.utf8 /path/to/service-account
+        ^C
 
 1. Deploy firebase functions.
 
