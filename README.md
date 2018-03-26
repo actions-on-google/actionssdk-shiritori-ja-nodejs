@@ -9,14 +9,14 @@
 
         iconv -f euc-jp -t utf-8 edict2 -o edict2.utf8
 
-1. 食べ物だけをフィルターする：
+1. 名詞だけをフィルターする：
 
-        cat edict2.utf8 | grep '/(n' | grep '{food}' > edict2-food.utf8
+        cat edict2.utf8 | grep '(n)' > edict2-noun.utf8
 
 1. 「Firebase Database」にアップロードする：
 
         npm install scripts/
-        node scripts/admin.js food edict2-food.utf8 /path/to/service-account
+        node scripts/admin.js noun edict2-noun.utf8 /path/to/service-account
         ^C
 
 1. 「Firebase Functions」をデプロイする。
@@ -36,13 +36,14 @@
 
         iconv -f euc-jp -t utf-8 edict2 -o edict2.utf8
 
-1. 食べ物だけをフィルターする：
+1. 名詞だけをフィルターする：
 
-        cat edict2.utf8 | grep '/(n' | grep '{food}' > edict2-food.utf8
+        cat edict2.utf8 | grep '(n)' > edict2-noun.utf8
 
 1. ローカルのコーパスを作成する：
 
-        node scripts/admin.js food edict2-food.utf8 > functions/shiritori/corpus.json
+        npm install scripts/
+        node scripts/admin.js noun edict2-noun.utf8 > functions/shiritori/corpus.json
 
 1. ローカルで起動してテストする：
 

@@ -20,9 +20,11 @@ const shiritori = require('./shiritori');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
+const corpus = 'noun';
+
 const dict = k => {
   return admin.database()
-      .ref('food').child(k)
+      .ref(corpus).child(k)
       .once('value')
       .then(snap => snap.val());
 };
