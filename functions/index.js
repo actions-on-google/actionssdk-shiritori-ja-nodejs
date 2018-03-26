@@ -28,8 +28,7 @@ const dict = k => {
 };
 
 function welcomeHandler (app) {
-  app.data.used = ['しりとり'];
-  app.ask('しりとり');
+  app.ask('どうぞ、始めて下さい');
 }
 
 function gameHandler (app) {
@@ -37,13 +36,13 @@ function gameHandler (app) {
     const input = app.getRawInput();
     shiritori.interact(dict, input, app.data.used, {
       lose () {
-        app.tell('ざんねん。');
+        app.tell('ざんねん。あなたの負けです。');
       },
       win (word, kana) {
         if (word) {
           app.tell(`${word} [${kana}]`);
         } else {
-          app.tell('すごい！');
+          app.tell('すごい！あなたの勝ちです。');
         }
       },
       next (word, kana) {
@@ -69,6 +68,7 @@ actionMap.set('default', defaultHandler);
 
 exports.shiritori = functions.https.onRequest((request, response) => {
   const app = new DialogflowApp({request, response});
+  app.data.used = app.data.used || [];
   console.log('Request headers: ' + JSON.stringify(request.headers));
   console.log('Request body: ' + JSON.stringify(request.body));
   app.handleRequest(actionMap);
