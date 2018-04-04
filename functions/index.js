@@ -14,6 +14,11 @@
 
 'use strict';
 
+const entries = require('object.entries');
+if (!Object.entries) {
+  entries.shim();
+}
+
 const { DialogflowApp } = require('actions-on-google');
 const functions = require('firebase-functions');
 const shiritori = require('./shiritori');
