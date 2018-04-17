@@ -19,7 +19,7 @@ if (!Object.entries) {
   entries.shim();
 }
 
-const { DialogflowApp } = require('actions-on-google');
+const { actionssdk, SimpleResponse } = require('actions-on-google');
 const functions = require('firebase-functions');
 const shiritori = require('./shiritori');
 const admin = require('firebase-admin');
@@ -34,50 +34,46 @@ const dict = k => {
       .then(snap => snap.val());
 };
 
-function welcomeHandler (app) {
-  app.ask('どうぞ、始めて下さい');
-}
+const app = actionssdk({
+  debug: true,
+  init: () => ({
+    data: {
+      used: []
+    }
+  })
+});
 
-function gameHandler (app) {
+app.intent('actions.intent.MAIN', (conv) => {
+  conv.ask('どうぞ、始めて下さい');
+});
+
+app.intent('actions.intent.TEXT', (conv, input) => new Promise((resolve, reject) => {
   shiritori.loaded.then(() => {
-    const input = app.getRawInput();
-    shiritori.interact(dict, input, app.data.used, {
+    shiritori.interact(dict, input, conv.data.used, {
       lose () {
-        app.tell('ざんねん。あなたの負けです。');
+        conv.close('ざんねん。あなたの負けです。');
+        resolve();
       },
       win (word, kana) {
         if (word) {
-          app.tell(`${word} [${kana}]`);
+          conv.close(`${word} [${kana}]`);
+          resolve();
         } else {
-          app.tell('すごい！あなたの勝ちです。');
+          conv.close('すごい！あなたの勝ちです。');
+          resolve();
         }
       },
       next (word, kana) {
-        app.data.used.unshift(input);
-        app.data.used.unshift(word);
-        app.ask({
+        conv.data.used.unshift(input);
+        conv.data.used.unshift(word);
+        conv.ask(new SimpleResponse({
           speech: word,
-          displayText: `${word} [${kana}]`
-        });
+          text: `${word} [${kana}]`
+        }));
+        resolve();
       }
     });
   });
-}
+}));
 
-function defaultHandler (app) {
-  app.tell('しりとりのゲーム');
-}
-
-const actionMap = new Map();
-actionMap.set('input.welcome', welcomeHandler);
-actionMap.set('input.unknown', gameHandler);
-actionMap.set('default', defaultHandler);
-
-exports.shiritori = functions.https.onRequest((request, response) => {
-  const app = new DialogflowApp({request, response});
-  app.data.used = app.data.used || [];
-  console.log('Request headers: ' + JSON.stringify(request.headers));
-  console.log('Request body: ' + JSON.stringify(request.body));
-  app.handleRequest(actionMap);
-});
-exports.shiritori.actionMap = actionMap;
+exports.shiritoriV2 = functions.https.onRequest(app);

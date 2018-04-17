@@ -2,8 +2,11 @@
 
 ## 設定
 
-1. 「[Dialogflow](https://dialogflow.com/)」のプロジェクトを作成する。
-1. 「Firebase Cloud Functions」のfullfillmentをつかう。
+1. 「[Actions on Google](https://console.actions.google.com/)」のプロジェクトを作成する。
+1. 「Action package」をアープデートする：
+
+        gactions update --action_package action.json --project PROJECT_NAME
+
 1. [edict2](http://www.edrdg.org/jmdict/edict_doc.html)の辞書をダウンロードする。
 1. utf-8に変換する：
 
@@ -24,7 +27,7 @@
         firebase deploy
 
 1. [Cloud Console](https://console.cloud.google.com)で `shiritori` のRAMを512MBまで上げる。
-1. 「Actions on Google Simulator」でロケールを日本語に設定する。
+1. [Actions on Google](https://console.actions.google.com/)「Simulator」でロケールを日本語に設定する。
 1. アシスタントアプリをテストしてみる。
 
         > テスト用アプリにつないで

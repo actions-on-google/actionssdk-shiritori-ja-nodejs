@@ -1,0 +1,30 @@
+{
+  "locale": "ja",
+  "actions": [
+    {
+      "name": "MAIN",
+      "intent": {
+        "name": "actions.intent.MAIN",
+	"trigger": {
+          "queryPatterns": [
+	    "しりとり",
+	    "しりとりで遊ぼう",
+            "しりとりであそぼう",
+	    "しりとりで遊びたい",
+            "しりとりであそびたい"
+          ]
+	}
+      },
+      "fulfillment": {
+        "conversationName": "shiritori-v2"
+      }
+    }
+  ],
+  "conversations": {
+    "shiritori-v2": {
+      "name": "shiritori-v2",
+      "url": "https://us-central1-shiritori-internal.cloudfunctions.net/shiritoriV2",
+      "fulfillmentApiVersion": 2
+    }
+  }
+}

@@ -15,7 +15,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "actions-on-google": "^1.5.x",
+    "actions-on-google": "^2.0.x",
     "firebase-admin": "^4.2.1",
     "firebase-functions": "^0.8.1",
     "kuroshiro": "^0.2.1",
