@@ -47,8 +47,8 @@ shiritori.loaded.then(() => {
             process.exit(-1)
           },
           next (word, kana) {
-            inputs.unshift(input)
-            inputs.unshift(kana)
+            previousInputs.unshift(input)
+            previousInputs.unshift(kana)
             console.log(`${word} [${kana}]`)
             rl.prompt()
           }
