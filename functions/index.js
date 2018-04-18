@@ -35,7 +35,9 @@ const dict = k => {
 };
 
 const app = actionssdk({
+  // リクエストとレスポンスをロギングする。
   debug: true,
+  // Actionのデフォルトデータを初期化する。
   init: () => ({
     data: {
       used: []

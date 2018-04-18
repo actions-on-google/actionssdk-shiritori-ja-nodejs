@@ -20,6 +20,7 @@ const wanakana = require('wanakana')
 const smallKanas = 'ぁぃぅぇぉゃゅょ'
 let kuroshiroLoaded = false
 
+// 辞書のローディング。
 exports.loaded = new Promise((resolve, reject) => {
   kuroshiro.init(function (err) {
     if (err) {
@@ -31,7 +32,7 @@ exports.loaded = new Promise((resolve, reject) => {
   })
 })
 
-// Check the first word against remaining of the shiritori chain.
+// しりとりのルールのチェック。
 exports.check = (word, chain) => {
   if ((chain === undefined) || (chain.length === 0)) {
     return true
@@ -42,13 +43,16 @@ exports.check = (word, chain) => {
     chain = chain.map((e) => kuroshiro.toHiragana(e))
   }
 
+  // 漢字からひらがなにする。
   const wordHira = wanakana.toHiragana(word)
   const chainHira = chain.map(wanakana.toHiragana)
 
+  // 使った名詞をチェックする。
   if (chainHira.indexOf(wordHira, 0) !== -1) {
     return false
   }
 
+  // しりとりの最初の文字をチェックする。
   const validKanas = exports.kanas(chain[0])
   for (const k of validKanas) {
     const begin = wordHira.slice(0, k.length)
@@ -59,7 +63,7 @@ exports.check = (word, chain) => {
   return false
 }
 
-// Returns a Set of valid kana sequences for the next word.
+// 名詞からしりとりのひらがなを選ぶ。
 exports.kanas = (word) => new Set((() => {
   if (kuroshiroLoaded) {
     word = kuroshiro.toHiragana(word)
@@ -93,14 +97,13 @@ exports.kanas = (word) => new Set((() => {
   ]
 })())
 
-// Evaluate one round of game with for given word and previous inputs.
+// しりとりのゲームループ。
 exports.interact = (dict, word, previousInputs, callbacks) => {
   const next = exports.kanas(word)
   if ((next.size === 0) || !exports.check(word, previousInputs)) {
     return callbacks.lose()
   }
   const key = next.values().next().value
-  // TODO(proppy): add multiple key lookup
   dict(key).then((words) => {
     const unused = []
     if (words) {
