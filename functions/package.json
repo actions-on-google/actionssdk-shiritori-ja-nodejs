@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "actions-on-google": "^2.0.x",
-    "firebase-admin": "^4.2.1",
-    "firebase-functions": "^0.8.1",
+    "firebase-admin": "^5.12.1",
+    "firebase-functions": "^1.0.3",
     "kuroshiro": "^0.2.1",
     "object.entries": "^1.0.4",
     "shiritori": "file:shiritori",
