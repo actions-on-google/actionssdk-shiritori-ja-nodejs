@@ -98,29 +98,29 @@ exports.kanas = (word) => new Set((() => {
 })())
 
 // しりとりのゲームループ。
-exports.interact = (dict, word, previousInputs, callbacks) => {
-  const next = exports.kanas(word)
-  if ((next.size === 0) || !exports.check(word, previousInputs)) {
-    return callbacks.lose()
+exports.interact = (dict, word, chain) => new Promise((resolve, reject) => {
+  const next = exports.kanas(word);
+  if ((next.size === 0) || !exports.check(word, chain)) {
+    return reject({loose: true})
   }
   const key = next.values().next().value
   dict(key).then((words) => {
     const unused = []
     if (words) {
       for (const k of Object.keys(words)) {
-        if (!previousInputs.includes(words[k])) {
+        if (!chain.includes(words[k])) {
           unused.push(k)
         }
       }
     }
     if (unused.length === 0) {
-      return callbacks.win()
+      return reject({win: true})
     }
     const w = unused[Math.floor(Math.random() * unused.length)]
     const wk = words[w]
     if (wk[wk.length - 1] === 'ん') {
-      return callbacks.win(w, wk)
+      return reject({win: true, 'word': w, 'kana': wk})
     }
-    return callbacks.next(w, wk)
+    return resolve({'word': w, 'kana': wk})
   })
-}
+})
