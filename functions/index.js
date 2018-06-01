@@ -49,33 +49,31 @@ app.intent('actions.intent.MAIN', (conv) => {
   conv.ask('どうぞ、始めて下さい');
 });
 
-app.intent('actions.intent.TEXT', (conv, input) => new Promise((resolve, reject) => {
-  shiritori.loaded.then(() => {
-    shiritori.interact(dict, input, conv.data.used, {
-      lose () {
-        conv.close('ざんねん。あなたの負けです。');
-        resolve();
-      },
-      win (word, kana) {
-        if (word) {
-          conv.close(`${word} [${kana}]`);
-          resolve();
-        } else {
-          conv.close('すごい！あなたの勝ちです。');
-          resolve();
-        }
-      },
-      next (word, kana) {
-        conv.data.used.unshift(input);
-        conv.data.used.unshift(word);
-        conv.ask(new SimpleResponse({
-          speech: word,
-          text: `${word} [${kana}]`
-        }));
-        resolve();
-      }
-    });
+app.intent('actions.intent.TEXT', (conv, input) => {
+  return shiritori.loaded.then(() => {
+    return shiritori.interact(dict, input, conv.data.used)
+        .then(result => {
+          conv.data.used.unshift(input);
+          conv.data.used.unshift(result.word);
+          conv.ask(new SimpleResponse({
+            speech: result.word,
+            text: `${result.word} [${result.kana}]`
+          }));
+        })
+        .catch(result => {
+          if (result.win) {
+            if (result.word) {
+              conv.close(`${result.word} [${result.kana}]`);
+            } else {
+              conv.close('すごい！あなたの勝ちです。');
+            }
+          } else if (result.loose) {
+            conv.close('ざんねん。あなたの負けです。');
+          } else {
+            throw result;
+          }
+        });
   });
-}));
+});
 
-exports.shiritoriV2 = functions.https.onRequest(app);
+exports.shiritoriV3 = functions.https.onRequest(app);

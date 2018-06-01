@@ -79,57 +79,39 @@ const dict = k => Promise.resolve({
   }
 }[k])
 
-test.cb('internal.next', t => {
-  t.plan(2)
-  shiritori.interact(dict, 'べんと', [], {
-    next (word, kana) {
-      t.is('とんかつ', kana)
-      t.is('とんかつ', word)
-      t.end()
-    }
-  })
+test('internal.next', async t => {
+  const result = await shiritori.interact(dict, 'べんと', [])
+  t.is('とんかつ', result.kana)
+  t.is('とんかつ', result.word)
 })
 
-test.cb('interact.lose', t => {
-  t.plan(1)
-  shiritori.interact(dict, 'つと', ['とつ', 'つと'], {
-    lose (result) {
-      t.is(undefined, result)
-      t.end()
-    }
-  })
+test('interact.lose', async t => {
+  const result = await t.throws(shiritori.interact(dict, 'つと', ['とつ', 'つと']))
+  t.is(true, result.loose)
 })
 
-test.cb('internal.win without result', t => {
-  t.plan(1)
-  shiritori.interact(dict, 'つと', ['とんかつ', 'べんと'], {
-    win (result) {
-      t.is(undefined, result)
-      t.end()
-    }
-  })
+test('internal.win without result', async t => {
+  const result = await t.throws(shiritori.interact(dict, 'つと', ['とんかつ', 'べんと']))
+  t.is(true, result.win)
 })
 
-test.cb('internal.win with result', t => {
-  t.plan(2)
-  shiritori.interact(dict, 'とんかつ', ['べんと'], {
-    win (word, kana) {
-      t.is('つけまん', kana)
-      t.is('つけまん', word)
-      t.end()
-    }
-  })
+test('internal.win with result', async t => {
+  const result = await t.throws(shiritori.interact(dict, 'とんかつ', ['べんと']))
+  t.is(true, result.win)
+  t.is('つけまん', result.kana)
+  t.is('つけまん', result.word)
 })
 
-test.cb('interact.win kanji', t => {
-  t.plan(2)
-  shiritori.loaded.then(() => {
-    shiritori.interact(dict, '銀座', ['鰻'], {
-      win (word, kana) {
-        t.is('ざぶとん', kana)
-        t.is('座布団', word)
-        t.end()
-      }
-    })
-  })
+test('interact.win kanji', async t => {
+  await shiritori.loaded
+  const result = await t.throws(shiritori.interact(dict, '銀座', ['鰻']))
+  t.is(true, result.win)
+  t.is('ざぶとん', result.kana)
+  t.is('座布団', result.word)
+})
+
+test('interact.error ', async t => {
+  const result = await t.throws(shiritori.interact(k => Promise.resolve({'つけまん': ''}),
+                                                  'とんかつ', ['べんと']))
+  t.true(result.error.length > 0)
 })
