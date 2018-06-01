@@ -6,5 +6,8 @@
   "extends": ["standard"],
   "env": {
     "node": true
+  },
+  "rules": {
+    "prefer-promise-reject-errors": "off"
   }
 }
