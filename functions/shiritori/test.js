@@ -80,7 +80,7 @@ const dict = k => Promise.resolve({
 }[k])
 
 test('internal.next', async t => {
-  const result = await shiritori.interact(dict, 'べんと', [],)
+  const result = await shiritori.interact(dict, 'べんと', [])
   t.is('とんかつ', result.kana)
   t.is('とんかつ', result.word)
 })
@@ -108,4 +108,10 @@ test('interact.win kanji', async t => {
   t.is(true, result.win)
   t.is('ざぶとん', result.kana)
   t.is('座布団', result.word)
+})
+
+test('interact.error ', async t => {
+  const result = await t.throws(shiritori.interact(k => Promise.resolve({'つけまん': ''}),
+                                                  'とんかつ', ['べんと']))
+  t.true(result.error.length > 0)
 })

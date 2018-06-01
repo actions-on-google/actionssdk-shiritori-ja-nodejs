@@ -36,7 +36,7 @@ shiritori.loaded.then(() => {
         .interact(
             kana => Promise.resolve(corpus[kana]),
             input,
-            chain,
+            chain
         )
         .then(result => {
           console.log(`${result.word} [${result.kana}]`)
@@ -48,9 +48,11 @@ shiritori.loaded.then(() => {
           if (reason.win) {
             console.log('すごい！')
             process.exit(0)
-          } else {
+          } else if (reason.loose) {
             console.log('ざんねん。')
             process.exit(-1)
+          } else {
+            throw reason
           }
         })
   })

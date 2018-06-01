@@ -99,7 +99,7 @@ exports.kanas = (word) => new Set((() => {
 
 // しりとりのゲームループ。
 exports.interact = (dict, word, chain) => new Promise((resolve, reject) => {
-  const next = exports.kanas(word);
+  const next = exports.kanas(word)
   if ((next.size === 0) || !exports.check(word, chain)) {
     return reject({loose: true})
   }
@@ -118,9 +118,12 @@ exports.interact = (dict, word, chain) => new Promise((resolve, reject) => {
     }
     const w = unused[Math.floor(Math.random() * unused.length)]
     const wk = words[w]
-    if (wk[wk.length - 1] === 'ん') {
-      return reject({win: true, 'word': w, 'kana': wk})
+    if (wk.length === 0) {
+      return reject({error: 'empty dictionary entry for key: ' + w})
     }
-    return resolve({'word': w, 'kana': wk})
+    if (wk[wk.length - 1] === 'ん') {
+      return reject({win: true, word: w, kana: wk})
+    }
+    resolve({word: w, kana: wk})
   })
 })
