@@ -50,8 +50,8 @@ app.intent('actions.intent.MAIN', (conv) => {
 });
 
 app.intent('actions.intent.TEXT', (conv, input) => {
-  shiritori.loaded.then(() => {
-    shiritori.interact(dict, input, conv.data.used)
+  return shiritori.loaded.then(() => {
+    return shiritori.interact(dict, input, conv.data.used)
         .then(result => {
           conv.data.used.unshift(input);
           conv.data.used.unshift(result.word);
