@@ -41,7 +41,7 @@ shiritori.loaded.then(() => {
         .then(result => {
           console.log(`${result.word} [${result.kana}]`)
           chain.unshift(input)
-          chain.unshift(result.word)
+          chain.unshift(result.kana)
           rl.prompt()
         })
         .catch(reason => {
