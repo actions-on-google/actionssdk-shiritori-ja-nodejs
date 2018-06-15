@@ -3,7 +3,7 @@
 ## 設定
 
 1. 「[Actions on Google](https://console.actions.google.com/)」のプロジェクトを作成する。
-1. 「Action package」をアープデートする：
+1. 「Action package」をアップデートする：
 
         gactions update --action_package action.json --project PROJECT_NAME
 
