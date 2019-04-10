@@ -13,52 +13,55 @@
 // limitations under the License.
 
 import test from 'ava'
-import shiritori from './index'
+import shiritori from '.'
 
-test('shiritori', async t => {
-  await shiritori.loaded
-  t.true(shiritori.check('とんかつ', ['べんと']))
+test('check: shiritori', async t => {
+  t.true(await shiritori.check('とんかつ', ['べんと']))
 })
 
-test('already used', async t => {
-  await shiritori.loaded
-  t.false(shiritori.check('とんかつ', ['べんと', 'トンカツ']))
+test('check: ends with ん', async t => {
+  await t.throwsAsync(shiritori.check('とん', ['べんと']),
+                      /ん/)
 })
 
-test('not shiritori', async t => {
-  await shiritori.loaded
-  t.false(shiritori.check('とんかつ', ['エビフライ']))
+test('check: already used', async t => {
+  await t.throwsAsync(shiritori.check('とんかつ', ['べんと', 'トンカツ']),
+                      /already used/)
 })
 
-test('ー rules', async t => {
-  await shiritori.loaded
-  t.true(shiritori.check('アイスクリーム', ['ミキサー']))
-  t.true(shiritori.check('サンドバッグ', ['ミキサー']))
-  t.true(shiritori.check('サーキット', ['ミキサー']))
-  t.true(shiritori.check('かり', ['りかー']))
-  t.true(shiritori.check('あり', ['りかー']))
-  t.false(shiritori.check('とんかつ', ['りかー']))
-  t.true(shiritori.check('田んぼ', ['スプリンター']))
+test('check: not shiritori', async t => {
+  await t.throwsAsync(shiritori.check('とんかつ', ['エビフライ']),
+                      /does not match/)
 })
 
-test('ぁぃぅぇぉゃゅょ rules', async t => {
-  await shiritori.loaded
-  t.true(shiritori.check('やり', ['かっしゃ']))
-  t.true(shiritori.check('しゃくなげ', ['かっしゃ']))
+test('check: ー rules', async t => {
+  t.true(await shiritori.check('アイスクリーム', ['ミキサー']))
+  t.true(await shiritori.check('サンドバッグ', ['ミキサー']))
+  t.true(await shiritori.check('サーキット', ['ミキサー']))
+  t.true(await shiritori.check('かり', ['りかー']))
+  t.true(await shiritori.check('あり', ['りかー']))
+  t.true(await shiritori.check('田んぼ', ['スプリンター']))
+  await t.throwsAsync(shiritori.check('とんかつ', ['りかー']),
+                      /does not match/)
 })
 
-test('kanji', async t => {
-  await shiritori.loaded
-  t.true(shiritori.check('六本木', ['白']))
+test('check: ぁぃぅぇぉゃゅょ rules', async t => {
+  t.true(await shiritori.check('やり', ['かっしゃ']))
+  t.true(await shiritori.check('しゃくなげ', ['かっしゃ']))
 })
 
-test('kanas', t => {
-  t.deepEqual(new Set([]), shiritori.kanas('らめん'))
-  t.deepEqual(new Set(['つ']), shiritori.kanas('とんかつ'))
-  t.deepEqual(new Set(['あ', 'さ']), shiritori.kanas('ミキサー'))
-  t.deepEqual(new Set(['や', 'しゃ']), shiritori.kanas('かっしゃ'))
-  t.deepEqual(new Set(['あ']), shiritori.kanas('リアー'))
-  t.deepEqual(new Set(['あ', 'か']), shiritori.kanas('りかー'))
+test('check: kanji', async t => {
+  t.true(await shiritori.check('六本木', ['白']))
+})
+
+test('kanas', async t => {
+  t.deepEqual(new Set([]), await shiritori.kanas('らめん'))
+  t.deepEqual(new Set(['つ']), await shiritori.kanas('とんかつ'))
+  t.deepEqual(new Set(['あ', 'さ']), await shiritori.kanas('ミキサー'))
+  t.deepEqual(new Set(['や', 'しゃ']), await shiritori.kanas('かっしゃ'))
+  t.deepEqual(new Set(['あ']), await shiritori.kanas('リアー'))
+  t.deepEqual(new Set(['あ', 'か']), await shiritori.kanas('りかー'))
+  t.deepEqual(new Set(['ざ']), await shiritori.kanas('銀座'))
 })
 
 const dict = k => Promise.resolve({
@@ -79,39 +82,36 @@ const dict = k => Promise.resolve({
   }
 }[k])
 
-test('internal.next', async t => {
+test('interact: next', async t => {
   const result = await shiritori.interact(dict, 'べんと', [])
   t.is('とんかつ', result.kana)
   t.is('とんかつ', result.word)
 })
 
-test('interact.lose', async t => {
-  const result = await t.throws(shiritori.interact(dict, 'つと', ['とつ', 'つと']))
-  t.is(true, result.loose)
+test('interact: lose', async t => {
+  await t.throwsAsync(shiritori.interact(dict, 'つと', ['とつ', 'つと']),
+                      {instanceOf: shiritori.Bad,
+                       message: /already used/})
 })
 
-test('internal.win without result', async t => {
-  const result = await t.throws(shiritori.interact(dict, 'つと', ['とんかつ', 'べんと']))
-  t.is(true, result.win)
+test('interact: win without result', async t => {
+  await t.throwsAsync(shiritori.interact(dict, 'つと', ['とんかつ', 'べんと']),
+                      {instanceOf: shiritori.Win})
 })
 
-test('internal.win with result', async t => {
-  const result = await t.throws(shiritori.interact(dict, 'とんかつ', ['べんと']))
-  t.is(true, result.win)
-  t.is('つけまん', result.kana)
-  t.is('つけまん', result.word)
+test('interact: win with result', async t => {
+  await t.throwsAsync(shiritori.interact(dict, 'とんかつ', ['べんと']),
+                      {instanceOf: shiritori.Win})
 })
 
-test('interact.win kanji', async t => {
-  await shiritori.loaded
-  const result = await t.throws(shiritori.interact(dict, '銀座', ['鰻']))
-  t.is(true, result.win)
-  t.is('ざぶとん', result.kana)
-  t.is('座布団', result.word)
+test('interact: win with ん', async t => {
+  await t.throwsAsync(shiritori.interact(dict, '銀座', ['鰻']),
+                      {instanceOf: shiritori.Win})
 })
 
-test('interact.error ', async t => {
-  const result = await t.throws(shiritori.interact(k => Promise.resolve({'つけまん': ''}),
-                                                  'とんかつ', ['べんと']))
-  t.true(result.error.length > 0)
+test('interact: error ', async t => {
+  await t.throwsAsync(shiritori.interact(k => Promise.resolve({ 'つけまん': '' }),
+                                         'とんかつ', ['べんと']),
+                      {instanceOf: Error,
+                       message:/no dictionary entry/})
 })

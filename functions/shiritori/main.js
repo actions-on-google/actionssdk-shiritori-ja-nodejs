@@ -30,30 +30,28 @@ const rl = readline.createInterface({
 const chain = ['しりとり']
 console.log(chain[0])
 rl.prompt()
-shiritori.loaded.then(() => {
-  rl.on('line', input => {
-    shiritori
-        .interact(
-            kana => Promise.resolve(corpus[kana]),
-            input,
-            chain
-        )
-        .then(result => {
-          console.log(`${result.word} [${result.kana}]`)
-          chain.unshift(input)
-          chain.unshift(result.kana)
-          rl.prompt()
-        })
-        .catch(reason => {
-          if (reason.win) {
-            console.log('すごい！')
-            process.exit(0)
-          } else if (reason.loose) {
-            console.log('ざんねん。')
-            process.exit(-1)
-          } else {
-            throw reason
-          }
-        })
+rl.on('line', input => {
+  shiritori.interact(
+      kana => Promise.resolve(corpus[kana]),
+      input,
+      chain
+  ).then(result => {
+    console.log(`${result.word} [${result.kana}]`)
+    chain.unshift(input)
+    chain.unshift(result.kana)
+    rl.prompt()
+  }).catch(reason => {
+    switch (reason.constructor) {
+      case shiritori.Win:
+        console.log('すごい！')
+        process.exit(0)
+        break
+      case shiritori.Bad:
+        console.log('ざんねん。')
+        process.exit(-1)
+        break
+      default:
+        throw reason
+    }
   })
 })

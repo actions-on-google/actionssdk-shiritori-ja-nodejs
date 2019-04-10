@@ -1,30 +1,32 @@
 {
   "name": "shiritori-scripts",
+  "version": "0.0.2",
   "description": "shiritori scripts",
-  "version": "0.0.1",
-  "private": true,
-  "license": "Apache Version 2.0",
   "author": "Google Inc.",
+  "license": "Apache Version 2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/actions-on-google/actionssdk-shiritori-ja-nodejs"
+  },
+  "private": true,
   "engines": {
-    "node": "~6.0"
+    "node": "8"
   },
   "scripts": {
     "lint": "eslint --fix \"**/*.js\"",
     "test": "npm run lint"
   },
   "dependencies": {
-    "firebase-admin": "^4.2.1",
-    "kuromoji": "^0.1.1",
-    "kuroshiro": "^0.2.1",
-    "wanakana": "^3.1.0"
+    "firebase-admin": "^7.2.0",
+    "kuroshiro": "^1.1.2",
+    "wanakana": "^4.0.2"
   },
   "devDependencies": {
-    "eslint": "^3.19.0",
-    "eslint-config-semistandard": "^11.0.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint": "^5.16.0",
+    "eslint-config-semistandard": "^13.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
