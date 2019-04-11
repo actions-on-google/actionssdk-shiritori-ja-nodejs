@@ -43,30 +43,32 @@ const app = actionssdk({
   })
 });
 
-app.intent('actions.intent.MAIN',
-           conv => conv.ask('どうぞ、始めて下さい'));
+app.intent('actions.intent.MAIN', conv => {
+  conv.ask('どうぞ、始めて下さい');
+});
 
-app.intent('actions.intent.TEXT',
-           (conv, input) => shiritori.interact(dict, input, conv.data.used)
-           .then(result => {
-             conv.data.used.unshift(input);
-             conv.data.used.unshift(result.word);
-             conv.ask(new SimpleResponse({
-               speech: result.word,
-               text: `${result.word} [${result.kana}]`
-             }));
-           })
-           .catch(reason => {
-             switch (reason.constructor) {
-               case shiritori.Win:
-                 conv.close('すごい！あなたの勝ちです。');
-                 break;
-               case shiritori.Bad:
-                 conv.close('ざんねん。あなたの負けです。');
-                 break;
-               default:
-                 throw reason;
-             }
-           }));
+app.intent('actions.intent.TEXT', (conv, input) => {
+  return shiritori.interact(dict, input, conv.data.used)
+      .then(result => {
+        conv.data.used.unshift(input);
+        conv.data.used.unshift(result.word);
+        conv.ask(new SimpleResponse({
+          speech: result.word,
+          text: `${result.word} [${result.kana}]`
+        }));
+      })
+      .catch(reason => {
+        switch (reason.constructor) {
+          case shiritori.Win:
+            conv.close('すごい！あなたの勝ちです。');
+            break;
+          case shiritori.Bad:
+            conv.close('ざんねん。あなたの負けです。');
+            break;
+          default:
+            throw reason;
+        }
+      });
+});
 
 exports.shiritoriV3 = functions.https.onRequest(app);

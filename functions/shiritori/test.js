@@ -22,6 +22,8 @@ test('check: shiritori', async t => {
 test('check: ends with ん', async t => {
   await t.throwsAsync(shiritori.check('とん', ['べんと']),
                       /ん/)
+  await t.throwsAsync(shiritori.check('トン', ['べんと']),
+                      /ん/)
 })
 
 test('check: already used', async t => {
