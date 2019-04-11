@@ -21,19 +21,19 @@ test('check: shiritori', async t => {
 
 test('check: ends with ん', async t => {
   await t.throwsAsync(shiritori.check('とん', ['べんと']),
-                      /ん/)
+    /ん/)
   await t.throwsAsync(shiritori.check('トン', ['べんと']),
-                      /ん/)
+    /ん/)
 })
 
 test('check: already used', async t => {
   await t.throwsAsync(shiritori.check('とんかつ', ['べんと', 'トンカツ']),
-                      /already used/)
+    /already used/)
 })
 
 test('check: not shiritori', async t => {
   await t.throwsAsync(shiritori.check('とんかつ', ['エビフライ']),
-                      /does not match/)
+    /does not match/)
 })
 
 test('check: ー rules', async t => {
@@ -44,7 +44,7 @@ test('check: ー rules', async t => {
   t.true(await shiritori.check('あり', ['りかー']))
   t.true(await shiritori.check('田んぼ', ['スプリンター']))
   await t.throwsAsync(shiritori.check('とんかつ', ['りかー']),
-                      /does not match/)
+    /does not match/)
 })
 
 test('check: ぁぃぅぇぉゃゅょ rules', async t => {
@@ -92,28 +92,28 @@ test('interact: next', async t => {
 
 test('interact: lose', async t => {
   await t.throwsAsync(shiritori.interact(dict, 'つと', ['とつ', 'つと']),
-                      {instanceOf: shiritori.Bad,
-                       message: /already used/})
+    { instanceOf: shiritori.Bad,
+      message: /already used/ })
 })
 
 test('interact: win without result', async t => {
   await t.throwsAsync(shiritori.interact(dict, 'つと', ['とんかつ', 'べんと']),
-                      {instanceOf: shiritori.Win})
+    { instanceOf: shiritori.Win })
 })
 
 test('interact: win with result', async t => {
   await t.throwsAsync(shiritori.interact(dict, 'とんかつ', ['べんと']),
-                      {instanceOf: shiritori.Win})
+    { instanceOf: shiritori.Win })
 })
 
 test('interact: win with ん', async t => {
   await t.throwsAsync(shiritori.interact(dict, '銀座', ['鰻']),
-                      {instanceOf: shiritori.Win})
+    { instanceOf: shiritori.Win })
 })
 
 test('interact: error ', async t => {
   await t.throwsAsync(shiritori.interact(k => Promise.resolve({ 'つけまん': '' }),
-                                         'とんかつ', ['べんと']),
-                      {instanceOf: Error,
-                       message:/no dictionary entry/})
+    'とんかつ', ['べんと']),
+  { instanceOf: Error,
+    message: /no dictionary entry/ })
 })

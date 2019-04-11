@@ -30,14 +30,14 @@ class Bad extends Error {}
 exports.Bad = Bad
 
 // https://github.com/hexenq/kuroshiro/issues/64
-async function toHiragana(word) {
+async function toHiragana (word) {
   const hira = await kuroshiro.convert(word, { to: 'hiragana' })
   return wanakana.toHiragana(hira)
 }
 
 // しりとりのルールのチェック。
 exports.check = (word, chain) => loaded.then(async () => {
-  //「ん」で終わるかどうか？
+  // 「ん」で終わるかどうか？
   const wordHira = await toHiragana(word)
   if (wordHira[wordHira.length - 1] === 'ん') {
     throw new Bad('ends with ん')

@@ -32,9 +32,9 @@ console.log(chain[0])
 rl.prompt()
 rl.on('line', input => {
   shiritori.interact(
-      kana => Promise.resolve(corpus[kana]),
-      input,
-      chain
+    kana => Promise.resolve(corpus[kana]),
+    input,
+    chain
   ).then(result => {
     console.log(`${result.word} [${result.kana}]`)
     chain.unshift(input)
@@ -45,11 +45,9 @@ rl.on('line', input => {
       case shiritori.Win:
         console.log('すごい！')
         process.exit(0)
-        break
       case shiritori.Bad:
         console.log('ざんねん。')
         process.exit(-1)
-        break
       default:
         throw reason
     }
