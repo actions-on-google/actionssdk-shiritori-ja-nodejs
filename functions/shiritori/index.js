@@ -24,10 +24,14 @@ const smallKanas = 'ぁぃぅぇぉゃゅょ'
 const kuroshiro = new Kuroshiro()
 const loaded = kuroshiro.init(new KuromojiAnalyzer())
 
-class Win extends Error {}
-exports.Win = Win
-class Bad extends Error {}
-exports.Bad = Bad
+exports.state = Object.freeze({
+  CONTINUE: 0,
+  LOOSE_N: 1,
+  WIN_N: 2,
+  LOOSE_USED: 3,
+  WIN_USED: 4,
+  LOOSE_CHAIN: 5
+})
 
 // https://github.com/hexenq/kuroshiro/issues/64
 async function toHiragana (word) {
@@ -40,18 +44,18 @@ exports.check = (word, chain) => loaded.then(async () => {
   // 「ん」で終わるかどうか？
   const wordHira = await toHiragana(word)
   if (wordHira[wordHira.length - 1] === 'ん') {
-    throw new Bad('ends with ん')
+    return exports.state.LOOSE_N
   }
 
   // 漢字からひらがなにする。
   if ((chain === undefined) || (chain.length === 0)) {
-    return true
+    return exports.state.CONTINUE
   }
 
   // 使った名詞をチェックする。
   const chainHira = await Promise.all(chain.map(toHiragana))
   if (chainHira.includes(wordHira)) {
-    throw new Bad('already used')
+    return exports.state.LOOSE_USED
   }
 
   // しりとりの最初の文字をチェックする。
@@ -59,10 +63,10 @@ exports.check = (word, chain) => loaded.then(async () => {
   for (const k of validKanas) {
     const begin = wordHira.slice(0, k.length)
     if (begin === k) {
-      return true
+      return exports.state.CONTINUE
     }
   }
-  throw new Bad('文字 does not match')
+  return exports.state.LOOSE_CHAIN
 })
 
 // 名詞からしりとりのひらがなを選ぶ。
@@ -99,25 +103,27 @@ exports.kanas = word => loaded.then(async () => {
 }).then(result => new Set(result))
 
 // しりとりのゲームループ。
-exports.interact = (dict, word, chain) => {
-  return exports.check(word, chain).then(async () => {
-    const validKanas = await exports.kanas(word)
-    // 他のかなもチェックしたほうかいい。
-    const firstValid = validKanas.values().next().value
-    const words = await dict(firstValid)
-    const unused = words ? Object.keys(words).filter(k => !chain.includes(words[k])) : []
-    if (unused.length === 0) {
-      throw new Win('no more unused word remaining in dictionary')
-    }
-    // ランダムでえらぶ。
-    const w = unused[Math.floor(Math.random() * unused.length)]
-    const wk = words[w]
-    if (wk.length === 0) {
-      throw new Error(`no dictionary entry for key: ${w}`)
-    }
-    if (wk[wk.length - 1] === 'ん') {
-      throw new Win('dictionary word ends with ん')
-    }
-    return { word: w, kana: wk }
-  })
+exports.interact = async (dict, word, chain) => {
+  const result = await exports.check(word, chain)
+  if (result !== exports.state.CONTINUE) {
+    return { state: result }
+  }
+  const validKanas = await exports.kanas(word)
+  // 他のかなもチェックしたほうかいい。
+  const firstValidKana = validKanas.values().next().value
+  const words = await dict(firstValidKana)
+  const unused = words ? Object.keys(words).filter(k => !chain.includes(words[k])) : []
+  if (unused.length === 0) {
+    return { state: exports.state.WIN_USED }
+  }
+  // ランダムでえらぶ。
+  const w = unused[Math.floor(Math.random() * unused.length)]
+  const wk = words[w]
+  if (wk.length === 0) {
+    throw new Error(`no dictionary entry for key: ${w}`)
+  }
+  if (wk[wk.length - 1] === 'ん') {
+    return { state: exports.state.WIN_N, word: w, kana: wk }
+  }
+  return { state: exports.state.CONTINUE, word: w, kana: wk }
 }
