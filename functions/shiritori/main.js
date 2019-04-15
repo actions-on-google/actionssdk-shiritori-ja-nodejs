@@ -42,9 +42,9 @@ rl.on('line', async input => {
       chain.unshift(result.kana)
       rl.prompt()
       break
-    case shiritori.state.LOOSE_N:
-    case shiritori.state.LOOSE_USED:
-    case shiritori.state.LOOSE_CHAIN:
+    case shiritori.state.LOSE_N:
+    case shiritori.state.LOSE_USED:
+    case shiritori.state.LOSE_CHAIN:
       console.log('ざんねん。')
       process.exit(-1)
     case shiritori.state.WIN_N:

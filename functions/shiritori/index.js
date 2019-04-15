@@ -26,11 +26,11 @@ const loaded = kuroshiro.init(new KuromojiAnalyzer())
 
 exports.state = Object.freeze({
   CONTINUE: 0,
-  LOOSE_N: 1,
+  LOSE_N: 1,
   WIN_N: 2,
-  LOOSE_USED: 3,
+  LOSE_USED: 3,
   WIN_USED: 4,
-  LOOSE_CHAIN: 5
+  LOSE_CHAIN: 5
 })
 
 // https://github.com/hexenq/kuroshiro/issues/64
@@ -44,7 +44,7 @@ exports.check = (word, chain) => loaded.then(async () => {
   // 「ん」で終わるかどうか？
   const wordHira = await toHiragana(word)
   if (wordHira[wordHira.length - 1] === 'ん') {
-    return exports.state.LOOSE_N
+    return exports.state.LOSE_N
   }
 
   // 漢字からひらがなにする。
@@ -55,7 +55,7 @@ exports.check = (word, chain) => loaded.then(async () => {
   // 使った名詞をチェックする。
   const chainHira = await Promise.all(chain.map(toHiragana))
   if (chainHira.includes(wordHira)) {
-    return exports.state.LOOSE_USED
+    return exports.state.LOSE_USED
   }
 
   // しりとりの最初の文字をチェックする。
@@ -66,7 +66,7 @@ exports.check = (word, chain) => loaded.then(async () => {
       return exports.state.CONTINUE
     }
   }
-  return exports.state.LOOSE_CHAIN
+  return exports.state.LOSE_CHAIN
 })
 
 // 名詞からしりとりのひらがなを選ぶ。

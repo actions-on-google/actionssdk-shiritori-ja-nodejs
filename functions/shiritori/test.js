@@ -22,19 +22,19 @@ test('check: continue', async t => {
 
 test('check: loose ん', async t => {
   t.is(await shiritori.check('とん', ['べんと']),
-    shiritori.state.LOOSE_N)
+    shiritori.state.LOSE_N)
   t.is(await shiritori.check('トン', ['べんと']),
-    shiritori.state.LOOSE_N)
+    shiritori.state.LOSE_N)
 })
 
 test('check: loose used', async t => {
   t.is(await shiritori.check('とんかつ', ['べんと', 'トンカツ']),
-    shiritori.state.LOOSE_USED)
+    shiritori.state.LOSE_USED)
 })
 
 test('check: loose chain', async t => {
   t.is(await shiritori.check('とんかつ', ['エビフライ']),
-    shiritori.state.LOOSE_CHAIN)
+    shiritori.state.LOSE_CHAIN)
 })
 
 test('check: ー rules', async t => {
@@ -51,7 +51,7 @@ test('check: ー rules', async t => {
   t.is(await shiritori.check('田んぼ', ['スプリンター']),
     shiritori.state.CONTINUE)
   t.is(await shiritori.check('とんかつ', ['りかー']),
-    shiritori.state.LOOSE_CHAIN)
+    shiritori.state.LOSE_CHAIN)
 })
 
 test('check: ぁぃぅぇぉゃゅょ rules', async t => {
@@ -103,7 +103,7 @@ test('interact: next', async t => {
 
 test('interact: lose', async t => {
   const result = await shiritori.interact(dict, 'つと', ['とつ', 'つと'])
-  t.is(result.state, shiritori.state.LOOSE_USED)
+  t.is(result.state, shiritori.state.LOSE_USED)
 })
 
 test('interact: win used', async t => {

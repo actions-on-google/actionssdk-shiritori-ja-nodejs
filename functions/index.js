@@ -58,9 +58,9 @@ app.intent('actions.intent.TEXT', async (conv, input) => {
         text: `${result.word} [${result.kana}]`
       }));
       break;
-    case shiritori.state.LOOSE_N:
-    case shiritori.state.LOOSE_USED:
-    case shiritori.state.LOOSE_CHAIN:
+    case shiritori.state.LOSE_N:
+    case shiritori.state.LOSE_USED:
+    case shiritori.state.LOSE_CHAIN:
       conv.close('ざんねん。あなたの負けです。');
       break;
     case shiritori.state.WIN_N:
