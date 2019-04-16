@@ -116,10 +116,3 @@ test('interact: win ん', async t => {
   t.is(result.state, shiritori.state.WIN_N)
   t.is(result.kana[result.kana.length - 1], 'ん')
 })
-
-test('interact: error', async t => {
-  await t.throwsAsync(shiritori.interact(k => Promise.resolve({ 'つけまん': '' }),
-    'とんかつ', ['べんと']),
-  { instanceOf: Error,
-    message: /no dictionary entry/ })
-})

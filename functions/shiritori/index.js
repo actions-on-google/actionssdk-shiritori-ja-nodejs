@@ -119,9 +119,6 @@ exports.interact = async (dict, word, chain) => {
   // ランダムでえらぶ。
   const w = unused[Math.floor(Math.random() * unused.length)]
   const wk = words[w]
-  if (wk.length === 0) {
-    throw new Error(`no dictionary entry for key: ${w}`)
-  }
   if (wk[wk.length - 1] === 'ん') {
     return { state: exports.state.WIN_N, word: w, kana: wk }
   }
