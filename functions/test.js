@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import test from 'ava'
-import functions from '.'
+import { shiritoriApp } from '.'
 import sinon from 'sinon'
 import admin from 'firebase-admin'
 
@@ -24,19 +24,16 @@ test.before(t => {
 })
 
 test.serial('welcome', async t => {
-  const req = fakeReq({'inputs': [
+  t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.MAIN'
     }
-  ]})
-  const res = fakeRes()
-  functions.shiritoriV3(req, res)
-  const result = await res.called
-  t.snapshot(result)
+  ]}, {})).body)
 })
 
 test.serial('game: next', async t => {
-  const req = fakeReq({'inputs': [
+  sinon.stub(admin, 'database').get(() => () => fakeDb(corpus))
+  t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.TEXT',
       'rawInputs': [
@@ -46,16 +43,12 @@ test.serial('game: next', async t => {
         }
       ]
     }
-  ]})
-  const res = fakeRes()
-  sinon.stub(admin, 'database').get(() => () => fakeDb(corpus))
-  functions.shiritoriV3(req, res)
-  const result = await res.called
-  t.snapshot(result)
+  ]}, {})).body)
 })
 
 test.serial('game: loose', async t => {
-  const req = fakeReq({'inputs': [
+  sinon.stub(admin, 'database').get(() => () => fakeDb(corpus))
+  t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.TEXT',
       'rawInputs': [
@@ -65,16 +58,12 @@ test.serial('game: loose', async t => {
         }
       ]
     }
-  ]})
-  const res = fakeRes()
-  sinon.stub(admin, 'database').get(() => () => fakeDb(corpus))
-  functions.shiritoriV3(req, res)
-  const result = await res.called
-  t.snapshot(result)
+  ]}, {})).body)
 })
 
 test.serial('game: win', async t => {
-  const req = fakeReq({'inputs': [
+  sinon.stub(admin, 'database').get(() => () => fakeDb({'つ':[]}))
+  t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.TEXT',
       'rawInputs': [
@@ -84,32 +73,9 @@ test.serial('game: win', async t => {
         }
       ]
     }
-  ]})
-  const res = fakeRes()
-  sinon.stub(admin, 'database').get(() => () => fakeDb({'つ':[]}))
-  functions.shiritoriV3(req, res)
-  const result = await res.called
-  t.snapshot(result)
+  ]}, {})).body)
 })
 
-function fakeReq(body) {
-  return {
-    get: () => {},
-    body: body,
-    headers: {}
-  }
-}
-
-function fakeRes(callback) {
-  const fake = {
-    status: () => fake,
-    setHeader: () => fake
-  }
-  fake.called = new Promise((resolve, reject) => {
-    fake.send = resolve
-  })
-  return fake
-}
 
 function fakeDb(data) {
   const fake = {
