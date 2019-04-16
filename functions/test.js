@@ -19,8 +19,15 @@ import admin from 'firebase-admin'
 
 const corpus = require('./corpus.json')
 
-test.before(t => {
+test.beforeEach(t => {
   sinon.stub(Math, 'random').returns(0)
+})
+
+test.afterEach(t => {
+  Math.random.restore()
+  if (t.context.database !== undefined) {
+    t.context.database.restore()
+  }
 })
 
 test.serial('welcome', async t => {
@@ -32,7 +39,9 @@ test.serial('welcome', async t => {
 })
 
 test.serial('game: next', async t => {
-  sinon.stub(admin, 'database').get(() => () => fakeDb(corpus))
+  t.context.database = sinon.stub(admin, 'database').get(
+      () => () => fakeDb(corpus)
+  )
   t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.TEXT',
@@ -47,7 +56,9 @@ test.serial('game: next', async t => {
 })
 
 test.serial('game: loose', async t => {
-  sinon.stub(admin, 'database').get(() => () => fakeDb(corpus))
+  t.context.database = sinon.stub(admin, 'database').get(
+      () => () => fakeDb(corpus)
+  )
   t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.TEXT',
@@ -62,7 +73,9 @@ test.serial('game: loose', async t => {
 })
 
 test.serial('game: win', async t => {
-  sinon.stub(admin, 'database').get(() => () => fakeDb({'つ':[]}))
+  t.context.database = sinon.stub(admin, 'database').get(
+      () => () => fakeDb({'つ':[]})
+  )
   t.snapshot((await shiritoriApp({'inputs': [
     {
       'intent': 'actions.intent.TEXT',
