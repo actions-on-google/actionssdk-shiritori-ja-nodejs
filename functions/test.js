@@ -55,7 +55,7 @@ test.serial('game: next', async t => {
   ]}, {})).body)
 })
 
-test.serial('game: loose', async t => {
+test.serial('game: lose', async t => {
   t.context.database = sinon.stub(admin, 'database').get(
       () => () => fakeDb(corpus)
   )
