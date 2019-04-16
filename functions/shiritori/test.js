@@ -116,3 +116,9 @@ test('interact: win ん', async t => {
   t.is(result.state, shiritori.state.WIN_N)
   t.is(result.kana[result.kana.length - 1], 'ん')
 })
+
+test('interact: empty dict', async t => {
+  const result = await shiritori.interact(k => Promise.resolve(null),
+                                          'とんかつ', ['べんと'])
+  t.is(result.state, shiritori.state.WIN_USED)
+})
