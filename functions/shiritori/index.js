@@ -14,70 +14,73 @@
 
 'use strict'
 
-const kuroshiro = require('kuroshiro')
+const Kuroshiro = require('kuroshiro')
+const KuromojiAnalyzer = require('kuroshiro-analyzer-kuromoji')
 const wanakana = require('wanakana')
 
 const smallKanas = 'ぁぃぅぇぉゃゅょ'
-let kuroshiroLoaded = false
 
 // 辞書のローディング。
-exports.loaded = new Promise((resolve, reject) => {
-  kuroshiro.init(function (err) {
-    if (err) {
-      reject(err)
-      return
-    }
-    kuroshiroLoaded = true
-    resolve()
-  })
+const kuroshiro = new Kuroshiro()
+const loaded = kuroshiro.init(new KuromojiAnalyzer())
+
+exports.state = Object.freeze({
+  CONTINUE: 0,
+  LOSE_N: 1,
+  WIN_N: 2,
+  LOSE_USED: 3,
+  WIN_USED: 4,
+  LOSE_CHAIN: 5
 })
 
-// しりとりのルールのチェック。
-exports.check = (word, chain) => {
-  if ((chain === undefined) || (chain.length === 0)) {
-    return true
-  }
+// https://github.com/hexenq/kuroshiro/issues/64
+async function toHiragana (word) {
+  const hira = await kuroshiro.convert(word, { to: 'hiragana' })
+  return wanakana.toHiragana(hira)
+}
 
-  if (kuroshiroLoaded) {
-    word = kuroshiro.toHiragana(word)
-    chain = chain.map((e) => kuroshiro.toHiragana(e))
+// しりとりのルールのチェック。
+exports.check = (word, chain) => loaded.then(async () => {
+  // 「ん」で終わるかどうか？
+  const wordHira = await toHiragana(word)
+  if (wordHira[wordHira.length - 1] === 'ん') {
+    return exports.state.LOSE_N
   }
 
   // 漢字からひらがなにする。
-  const wordHira = wanakana.toHiragana(word)
-  const chainHira = chain.map(wanakana.toHiragana)
+  if ((chain === undefined) || (chain.length === 0)) {
+    return exports.state.CONTINUE
+  }
 
   // 使った名詞をチェックする。
-  if (chainHira.indexOf(wordHira, 0) !== -1) {
-    return false
+  const chainHira = await Promise.all(chain.map(toHiragana))
+  if (chainHira.includes(wordHira)) {
+    return exports.state.LOSE_USED
   }
 
   // しりとりの最初の文字をチェックする。
-  const validKanas = exports.kanas(chain[0])
+  const validKanas = await exports.kanas(chain[0])
   for (const k of validKanas) {
     const begin = wordHira.slice(0, k.length)
     if (begin === k) {
-      return true
+      return exports.state.CONTINUE
     }
   }
-  return false
-}
+  return exports.state.LOSE_CHAIN
+})
 
 // 名詞からしりとりのひらがなを選ぶ。
-exports.kanas = (word) => new Set((() => {
-  if (kuroshiroLoaded) {
-    word = kuroshiro.toHiragana(word)
-  }
-
-  const wordKana = wanakana.toKatakana(word)
+exports.kanas = word => loaded.then(async () => {
+  const wordKana = await kuroshiro.convert(word, { to: 'katakana' })
   const wordHira = wanakana.toHiragana(wordKana)
-  const kk = wordKana[word.length - 1]
+  const kk = wordKana[wordKana.length - 1]
   const hk = wordHira[wordHira.length - 1]
 
   if (hk === 'ん') {
     return []
   }
 
+  // サー→「さ、あ」。
   if ((kk === 'ー') && (wordKana.length > 1)) {
     return [
       wordHira[wordHira.length - 1],
@@ -85,6 +88,7 @@ exports.kanas = (word) => new Set((() => {
     ]
   }
 
+  // しゃ→「しゃ、や」。
   if (smallKanas.includes(hk)) {
     return [
       String.fromCharCode(hk.charCodeAt(0) + 1),
@@ -92,38 +96,31 @@ exports.kanas = (word) => new Set((() => {
     ]
   }
 
+  // 最後の文字。
   return [
     wordHira[wordHira.length - 1]
   ]
-})())
+}).then(result => new Set(result))
 
 // しりとりのゲームループ。
-exports.interact = (dict, word, chain) => new Promise((resolve, reject) => {
-  const next = exports.kanas(word)
-  if ((next.size === 0) || !exports.check(word, chain)) {
-    return reject({loose: true})
+exports.interact = async (dict, word, chain) => {
+  const result = await exports.check(word, chain)
+  if (result !== exports.state.CONTINUE) {
+    return { state: result }
   }
-  const key = next.values().next().value
-  dict(key).then((words) => {
-    const unused = []
-    if (words) {
-      for (const k of Object.keys(words)) {
-        if (!chain.includes(words[k])) {
-          unused.push(k)
-        }
-      }
-    }
-    if (unused.length === 0) {
-      return reject({win: true})
-    }
-    const w = unused[Math.floor(Math.random() * unused.length)]
-    const wk = words[w]
-    if (wk.length === 0) {
-      return reject({error: 'empty dictionary entry for key: ' + w})
-    }
-    if (wk[wk.length - 1] === 'ん') {
-      return reject({win: true, word: w, kana: wk})
-    }
-    resolve({word: w, kana: wk})
-  })
-})
+  const validKanas = await exports.kanas(word)
+  // 他のかなもチェックしたほうかいい。
+  const firstValidKana = validKanas.values().next().value
+  const words = await dict(firstValidKana)
+  const unused = words ? Object.keys(words).filter(k => !chain.includes(words[k])) : []
+  if (unused.length === 0) {
+    return { state: exports.state.WIN_USED }
+  }
+  // ランダムでえらぶ。
+  const w = unused[Math.floor(Math.random() * unused.length)]
+  const wk = words[w]
+  if (wk[wk.length - 1] === 'ん') {
+    return { state: exports.state.WIN_N, word: w, kana: wk }
+  }
+  return { state: exports.state.CONTINUE, word: w, kana: wk }
+}

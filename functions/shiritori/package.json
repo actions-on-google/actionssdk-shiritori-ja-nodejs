@@ -1,30 +1,35 @@
 {
   "name": "shiritori",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "shiritori game logic",
+  "author": "Google Inc.",
+  "license": "Apache License 2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/actions-on-google/actionssdk-shiritori-ja-nodejs"
+  },
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix \"**/*.js\"",
-    "test": "ava --verbose",
+    "test": "c8 ava --verbose",
     "しりとり": "./main.js"
   },
-  "author": "Google Inc.",
-  "license": "Apache Version 2.0",
-  "devDependencies": {
-    "ava": "^0.25.0",
-    "eslint": "^3.19.0",
-    "eslint-config-semistandard": "^11.0.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-babel": "^4.1.2",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1"
-  },
   "dependencies": {
-    "kuroshiro": "^0.2.1",
-    "object.entries": "^1.0.4",
-    "wanakana": "^3.1.0"
+    "kuroshiro": "^1.1.2",
+    "kuroshiro-analyzer-kuromoji": "^1.1.0",
+    "nyc": "^13.3.0",
+    "object.entries": "^1.1.0",
+    "wanakana": "^4.0.2"
+  },
+  "devDependencies": {
+    "ava": "^1.4.1",
+    "c8": "^3.5.0",
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0"
   },
   "bin": {
     "しりとり": "./main.js"
