@@ -17,7 +17,6 @@
 const fs = require('fs');
 const wanakana = require('wanakana');
 const kuroshiro = require('kuroshiro');
-const path = require('path');
 
 if (process.argv.length < 4) {
   console.error('usage: admin <category> <edict> [service-action.json]');

@@ -73,4 +73,4 @@ app.intent('actions.intent.TEXT', async (conv, input) => {
 // for fullfillment
 exports.shiritoriV3 = functions.https.onRequest(app);
 // for testing
-exports.shiritoriApp = app
+exports.shiritoriApp = app;

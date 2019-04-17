@@ -12,37 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import test from 'ava'
-import { shiritoriApp } from '.'
-import sinon from 'sinon'
-import admin from 'firebase-admin'
+import test from 'ava';
+import { shiritoriApp } from '.';
+import sinon from 'sinon';
+import admin from 'firebase-admin';
 
-const corpus = require('./shiritori/corpus.json')
+const corpus = require('./shiritori/corpus.json');
 
 test.beforeEach(t => {
-  sinon.stub(Math, 'random').returns(0)
-})
+  sinon.stub(Math, 'random').returns(0);
+});
 
 test.afterEach(t => {
-  Math.random.restore()
+  Math.random.restore();
   if (t.context.database !== undefined) {
-    t.context.database.restore()
+    t.context.database.restore();
   }
-})
+});
 
 test.serial('welcome', async t => {
-  t.snapshot((await shiritoriApp({'inputs': [
+  t.snapshot((await shiritoriApp({ 'inputs': [
     {
       'intent': 'actions.intent.MAIN'
     }
-  ]}, {})).body)
-})
+  ] }, {})).body);
+});
 
 test.serial('game: next', async t => {
   t.context.database = sinon.stub(admin, 'database').get(
-      () => () => fakeDb(corpus)
-  )
-  t.snapshot((await shiritoriApp({'inputs': [
+    () => () => fakeDb(corpus)
+  );
+  t.snapshot((await shiritoriApp({ 'inputs': [
     {
       'intent': 'actions.intent.TEXT',
       'rawInputs': [
@@ -52,14 +52,14 @@ test.serial('game: next', async t => {
         }
       ]
     }
-  ]}, {})).body)
-})
+  ] }, {})).body);
+});
 
 test.serial('game: lose', async t => {
   t.context.database = sinon.stub(admin, 'database').get(
-      () => () => fakeDb(corpus)
-  )
-  t.snapshot((await shiritoriApp({'inputs': [
+    () => () => fakeDb(corpus)
+  );
+  t.snapshot((await shiritoriApp({ 'inputs': [
     {
       'intent': 'actions.intent.TEXT',
       'rawInputs': [
@@ -69,14 +69,14 @@ test.serial('game: lose', async t => {
         }
       ]
     }
-  ]}, {})).body)
-})
+  ] }, {})).body);
+});
 
 test.serial('game: win', async t => {
   t.context.database = sinon.stub(admin, 'database').get(
-      () => () => fakeDb({'つ':[]})
-  )
-  t.snapshot((await shiritoriApp({'inputs': [
+    () => () => fakeDb({ 'つ': [] })
+  );
+  t.snapshot((await shiritoriApp({ 'inputs': [
     {
       'intent': 'actions.intent.TEXT',
       'rawInputs': [
@@ -86,20 +86,19 @@ test.serial('game: win', async t => {
         }
       ]
     }
-  ]}, {})).body)
-})
+  ] }, {})).body);
+});
 
-
-function fakeDb(data) {
+function fakeDb (data) {
   const fake = {
     ref: () => fake,
     child: k => {
       return {
         once: () => new Promise((resolve, reject) => {
-          resolve({val: () => data[k]})
+          resolve({ val: () => data[k] });
         })
-      }
+      };
     }
-  }
-  return fake
+  };
+  return fake;
 }
