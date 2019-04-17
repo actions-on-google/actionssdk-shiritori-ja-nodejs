@@ -17,7 +17,7 @@ import { shiritoriApp } from '.'
 import sinon from 'sinon'
 import admin from 'firebase-admin'
 
-const corpus = require('./corpus.json')
+const corpus = require('./shiritori/corpus.json')
 
 test.beforeEach(t => {
   sinon.stub(Math, 'random').returns(0)
