@@ -119,6 +119,6 @@ test('interact: win ん', async t => {
 
 test('interact: empty dict', async t => {
   const result = await shiritori.interact(k => Promise.resolve(null),
-                                          'とんかつ', ['べんと'])
+    'とんかつ', ['べんと'])
   t.is(result.state, shiritori.state.WIN_USED)
 })

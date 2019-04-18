@@ -18,7 +18,7 @@
 
 1. 「Firebase Database」にアップロードする：
 
-        npm install scripts/
+        npm --prefix script/ install
         node scripts/admin.js noun edict2-noun.utf8 /path/to/service-account
         ^C
 
@@ -32,7 +32,7 @@
 
         > テスト用アプリにつないで
 
-## ローカルでのテスト
+## テスト
 
 1. [edict2](http://www.edrdg.org/jmdict/edict_doc.html)の辞書をダウンロードする。
 1. utf-8に変換する：
@@ -45,11 +45,22 @@
 
 1. ローカルのコーパスを作成する：
 
-        npm install scripts/
+        npm --prefix scripts/ install
         node scripts/admin.js noun edict2-noun.utf8 > functions/shiritori/corpus.json
+
+1. ニットテスト：
+
+        npm --prefix functions/shiritori/ install
+        npm --prefix functions/shiritori/ test
+        
+1. スナップショットテスト：
+
+        npm --prefix functions/ install
+        npm --prefix functions/ test
 
 1. ローカルで起動してテストする：
 
+        npm --prefix functions/shiritori/ install
         node functions/shiritori/main.js
 
 ```
@@ -65,7 +76,6 @@
 > たんたんめん
 ざんねん。
 ```
-
 
 ## Contributing
 
