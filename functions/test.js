@@ -23,7 +23,7 @@ test.beforeEach(t => {
   sinon.stub(Math, 'random').returns(0);
 });
 
-test.afterEach(t => {
+test.afterEach.always(t => {
   Math.random.restore();
   if (t.context.database !== undefined) {
     t.context.database.restore();

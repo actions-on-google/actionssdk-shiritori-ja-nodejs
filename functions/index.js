@@ -34,13 +34,7 @@ const dict = k => admin.database()
 
 const app = actionssdk({
   // リクエストとレスポンスをロギングする。
-  debug: true,
-  // Actionのデフォルトデータを初期化する。
-  init: () => ({
-    data: {
-      used: []
-    }
-  })
+  debug: true
 });
 
 app.intent('actions.intent.MAIN', conv => {
@@ -48,11 +42,13 @@ app.intent('actions.intent.MAIN', conv => {
 });
 
 app.intent('actions.intent.TEXT', async (conv, input) => {
-  const result = await shiritori.interact(dict, input, conv.data.used);
+  const chain = conv.data.used || [];
+  const result = await shiritori.interact(dict, input, chain);
   switch (result.state) {
     case shiritori.state.CONTINUE:
-      conv.data.used.unshift(input);
-      conv.data.used.unshift(result.word);
+      chain.unshift(input);
+      chain.unshift(result.word);
+      conv.data.used = chain;
       conv.ask(new SimpleResponse({
         speech: result.word,
         text: `${result.word} [${result.kana}]`
