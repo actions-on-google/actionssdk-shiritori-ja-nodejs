@@ -14,9 +14,11 @@
 
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs/promises');
 const wanakana = require('wanakana');
-const kuroshiro = require('kuroshiro');
+const Kuroshiro = require('kuroshiro');
+const KuromojiAnalyzer = require('kuroshiro-analyzer-kuromoji');
+const kuroshiro = new Kuroshiro();
 
 if (process.argv.length < 4) {
   console.error('usage: admin <category> <edict> [service-action.json]');
@@ -34,61 +36,52 @@ if (process.argv.length === 5) {
   });
 }
 
-function parseEdict2 (line, hiragana) {
-  const jp = line.substr(0, line.indexOf(' /'));
-  const parts = jp.split(' ');
-  function first (part) {
-    var words = part.split(';');
-    var w = words[0];
-    var i = w.indexOf('(');
-    if (i > 0) {
-      return w.substr(0, i);
+async function * parseEdict2 (path) {
+  const data = await fs.readFile(path, 'utf8');
+  const lines = data.split('\n');
+  for (const line of lines) {
+    if (line.length === 0) {
+      continue;
     }
-    return w;
+    const jp = line.substr(0, line.indexOf(' /'));
+    const parts = jp.split(' ');
+    const words = parts[0].split(';');
+    const w = words[0];
+    const i = w.indexOf('(');
+    const first = i > 0 ? w.substr(0, i) : w;
+    yield first;
   }
-  var result = {};
-  result.漢字 = first(parts[0]);
-  if (parts.length > 1) {
-    result.かな = first(parts[1].substr(1, parts[1].length - 2));
-  }
-  return result;
 }
 
-fs.readFile(process.argv[3], 'utf8', function (err, data) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  kuroshiro.init(function (err) {
-    if (err) {
-      console.log(err);
-      return;
+(async function () {
+  await kuroshiro.init(new KuromojiAnalyzer());
+  const しりとり = {};
+  for await (const 漢字 of parseEdict2(process.argv[3])) {
+    // https://github.com/hexenq/kuroshiro/issues/64
+    const かな = wanakana.toHiragana(await kuroshiro.convert(漢字, { to: 'hiragana' }));
+    const k = かな[0];
+    const lk = かな[かな.length - 1];
+    if (lk === 'ん') {
+      console.warn('skipping:', 漢字, 'ん[-1]:', lk);
+      continue;
     }
-    const しりとり = {};
-    data.split('\n').forEach(function (line) {
-      if (line.length === 0) {
-        return;
-      }
-      const parsed = parseEdict2(line);
-      const word = parsed.漢字;
-      const kana = wanakana.toHiragana(kuroshiro.toHiragana(word));
-      const k = kana[0];
-      const lk = kana[kana.length - 1];
-      if ((lk === 'ん') || !wanakana.isHiragana(k) || !wanakana.isHiragana(lk)) {
-        // skipping:  田舎パン いなかパン い パ
-        console.warn('skipping: ', word, kana, k, lk);
-        return;
-      }
-      if (admin) {
-        const db = admin.database();
-        const ref = db.ref(process.argv[2]);
-        ref.child(k).child(word).set(kana);
-      }
-      if (しりとり[k] === undefined) {
-        しりとり[k] = {};
-      }
-      しりとり[k][word] = kana;
-    });
-    console.log(JSON.stringify(しりとり));
-  });
-});
+    if (!wanakana.isHiragana(k)) {
+      console.warn('skipping:', 漢字, '!ひらがな[0]:', k);
+      continue;
+    }
+    if (!wanakana.isHiragana(lk)) {
+      console.warn('skipping:', 漢字, '!ひらがな[-1]:', lk);
+      continue;
+    }
+    if (admin) {
+      const db = admin.database();
+      const ref = db.ref(process.argv[2]);
+      ref.child(k).child(漢字).set(かな);
+    }
+    if (しりとり[k] === undefined) {
+      しりとり[k] = {};
+    }
+    しりとり[k][漢字] = かな;
+  }
+  console.log(JSON.stringify(しりとり));
+})();

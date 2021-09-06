@@ -9,16 +9,14 @@
     "url": "https://github.com/actions-on-google/actionssdk-shiritori-ja-nodejs"
   },
   "private": true,
-  "engines": {
-    "node": "8"
-  },
   "scripts": {
-    "lint": "eslint --fix \"**/*.js\"",
+    "lint": "eslint \"**/*.js\"",
     "test": "npm run lint"
   },
   "dependencies": {
-    "firebase-admin": "^7.2.0",
+    "firebase-admin": "^9.11.1",
     "kuroshiro": "^1.1.2",
+    "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "wanakana": "^4.0.2"
   },
   "devDependencies": {
