@@ -10,18 +10,19 @@
   },
   "private": true,
   "engines": {
-    "node": "8"
+    "node": "14"
   },
   "scripts": {
     "lint": "eslint --fix \"**/*.js\"",
     "test": "c8 ava --verbose",
     "start": "firebase serve --only functions",
-    "deploy": "firebase deploy --only functions:shiritoriV3"
+    "deploy": "firebase deploy --only functions:shiritoriV4"
   },
   "dependencies": {
-    "actions-on-google": "^2.6.0",
-    "firebase-admin": "^7.2.0",
-    "firebase-functions": "^2.2.1",
+    "actions-on-google": "^3.0.0",
+    "firebase-admin": "^9.11.1",
+    "firebase-functions": "^3.15.5",
+    "firebase-tools": "^9.17.0",
     "kuroshiro": "^1.1.2",
     "object.entries": "^1.1.0",
     "shiritori": "file:shiritori",

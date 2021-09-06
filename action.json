@@ -16,14 +16,14 @@
 	}
       },
       "fulfillment": {
-        "conversationName": "shiritori-v3"
+        "conversationName": "shiritori-v4"
       }
     }
   ],
   "conversations": {
     "shiritori-v3": {
-      "name": "shiritori-v3",
-      "url": "https://us-central1-shiritori-internal.cloudfunctions.net/shiritoriV3",
+      "name": "shiritori-v4",
+      "url": "https://us-central1-shiritori-internal.cloudfunctions.net/shiritoriV4",
       "fulfillmentApiVersion": 2
     }
   }
