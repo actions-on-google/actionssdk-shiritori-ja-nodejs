@@ -14,7 +14,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "firebase-admin": "^9.11.1",
+    "firebase-admin": "^11.11.1",
     "kuroshiro": "^1.1.2",
     "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "wanakana": "^4.0.2"
